@@ -1,0 +1,8 @@
+
+metricbeat.modules:
+  - module: prometheus
+    period: 10s
+    hosts: ["node_exporter:9100"]
+
+output.elasticsearch:
+  hosts: ["elasticsearch:9200"]

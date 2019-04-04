@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+  node_exporter:
+    image: quay.io/prometheus/node-exporter:v0.17.0
+    pid: "host"
+    volumes:
+      - /:/host:ro,rslave
+
+  prometheus:
+    image: quay.io/prometheus/prometheus:v2.8.1
+    user: '1000'
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    ports:
+      - 9090:9090
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.0.0-rc2
+    user: '1000'
+    environment:
+      - bootstrap.memory_lock=true
+      - transport.host=127.0.0.1
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./elasticsearch_data:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+
+  metricbeat:
+    image: docker.elastic.co/beats/metricbeat:7.0.0-rc2
+    volumes:
+      - ./metricbeat.yml:/usr/share/metricbeat/metricbeat.yml
+    command: ["-e", "-v", "--strict.perms=false"]
