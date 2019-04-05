@@ -4,6 +4,10 @@ metricbeat.modules:
     period: 10s
     hosts: ["node_exporter:9100", "cadvisor:8080"]
 
+setup.template.settings:
+  index.number_of_shards: 1
+  index.number_of_replicas: 0
+
 output.elasticsearch:
   hosts: ["elasticsearch:9200"]
 
