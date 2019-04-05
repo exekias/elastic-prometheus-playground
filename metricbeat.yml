@@ -20,5 +20,8 @@ processors:
 
 output.elasticsearch:
   hosts: ["elasticsearch:9200"]
+  index: "${INDEX_NAME}"
 
-setup.kibana.host: "kibana:5601"
+setup:
+  ilm.enabled: false
+  kibana.host: "kibana:5601"
