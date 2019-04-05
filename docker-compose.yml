@@ -60,8 +60,22 @@ services:
     cap_add:
       - ALL
 
-  metricbeat:
+  metricbeat_no_source:
     image: docker.elastic.co/beats/metricbeat:7.0.0-rc2
     volumes:
       - ./metricbeat.yml:/usr/share/metricbeat/metricbeat.yml
+    environment:
+      INDEX_NAME: metricbeat_no_source
+    command: [
+      "-e", "-v", "--strict.perms=false",
+      # Disable _source field:
+      "-E", "setup.template.settings._source.enabled=false",
+    ]
+
+  metricbeat_with_source:
+    image: docker.elastic.co/beats/metricbeat:7.0.0-rc2
+    volumes:
+      - ./metricbeat.yml:/usr/share/metricbeat/metricbeat.yml
+    environment:
+      INDEX_NAME: metricbeat_with_source
     command: ["-e", "-v", "--strict.perms=false"]
