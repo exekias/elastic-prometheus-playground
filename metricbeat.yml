@@ -2,7 +2,7 @@
 metricbeat.modules:
   - module: prometheus
     period: 10s
-    hosts: ["node_exporter:9100"]
+    hosts: ["node_exporter:9100", "cadvisor:8080"]
 
 output.elasticsearch:
   hosts: ["elasticsearch:9200"]
