@@ -9,7 +9,7 @@ It will launch:
 - [Prometheus server](https://github.com/prometheus/prometheus), consuming from both cadvisor and node_exporter
 - [Elasticsearch](https://www.elastic.co/products/elasticsearch)
 - [Kibana](https://www.elastic.co/products/kibana)
-- [Metricbeat](https://www.elastic.co/products/beats/metricbeat) consuming from both cadvisor and node_exporter
+- [Metricbeat](https://www.elastic.co/products/beats/metricbeat) consuming from both cadvisor and node_exporter, reporting to Elasticsearch
 
 
 # Requirements
