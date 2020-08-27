@@ -55,7 +55,7 @@ services:
       - ./kibana.yml:/usr/share/kibana/config/kibana.yml
 
   agent:
-    image: docker.elastic.co/beats/elastic-agent:7.9.0
+    image: docker.elastic.co/beats/elastic-agent:7.x-SNAPSHOT
     volumes:
       - ./elastic-agent.yml:/usr/share/elastic-agent/elastic-agent.yml
     command: ["-e", "-v"]
