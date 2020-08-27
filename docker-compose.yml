@@ -2,7 +2,7 @@ version: '3'
 
 services:
   cadvisor:
-    image: google/cadvisor:v0.33.0
+    image: gcr.io/google-containers/cadvisor:v0.36.0
     ports:
     - 8080:8080
     volumes:
@@ -12,13 +12,13 @@ services:
     - /var/lib/docker/:/var/lib/docker:ro
 
   node_exporter:
-    image: quay.io/prometheus/node-exporter:v0.17.0
+    image: quay.io/prometheus/node-exporter:v1.0.1
     pid: "host"
     volumes:
-      - /:/host:ro,rslave
+      - /:/host:ro
 
   prometheus:
-    image: quay.io/prometheus/prometheus:v2.8.1
+    image: quay.io/prometheus/prometheus:v2.20.1
     user: '1000'
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
@@ -30,23 +30,25 @@ services:
       - 9090:9090
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.0.0-rc2
-    user: '1000'
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.0
     environment:
       - bootstrap.memory_lock=true
       - transport.host=127.0.0.1
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+      - network.host=
+      - http.host=0.0.0.0
+      - indices.id_field_data.enabled=true
+      - xpack.license.self_generated.type=trial
+      - xpack.security.enabled=true
+      - xpack.security.authc.api_key.enabled=true
+      - ELASTIC_PASSWORD=changeme
     volumes:
       - ./elasticsearch_data:/usr/share/elasticsearch/data
     ports:
       - 9200:9200
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:7.0.0-rc2
+    image: docker.elastic.co/kibana/kibana:7.9.0
     environment:
       SERVER_NAME: localhost
       ELASTICSEARCH_URL: http://elasticsearch:9200/
@@ -59,23 +61,11 @@ services:
         hard: -1
     cap_add:
       - ALL
-
-  metricbeat:
-    image: docker.elastic.co/beats/metricbeat:7.0.0-rc2
     volumes:
-      - ./metricbeat.yml:/usr/share/metricbeat/metricbeat.yml
-    environment:
-      INDEX_NAME: metricbeat
-    command: ["-e", "-v", "--strict.perms=false"]
+      - ./kibana.yml:/usr/share/kibana/config/kibana.yml
 
-#  metricbeat_no_source:
-#    image: docker.elastic.co/beats/metricbeat:7.0.0-rc2
-#    volumes:
-#      - ./metricbeat.yml:/usr/share/metricbeat/metricbeat.yml
-#    environment:
-#      INDEX_NAME: metricbeat_no_source
-#    command: [
-#      "-e", "-v", "--strict.perms=false",
-#      # Disable _source field:
-#      "-E", "setup.template.settings._source.enabled=false",
-#    ]
+  agent:
+    image: docker.elastic.co/beats/elastic-agent:7.9.0
+    volumes:
+      - ./elastic-agent.yml:/usr/share/elastic-agent/elastic-agent.yml
+    command: ["-e", "-v"]

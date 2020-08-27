@@ -1,0 +1,17 @@
+outputs:
+  default:
+    type: elasticsearch
+    hosts: '${ELASTICSEARCH_HOSTS:http://elasticsearch:9200}'
+    username: '${ELASTICSEARCH_USERNAME:elastic}'
+    password: '${ELASTICSEARCH_PASSWORD:changeme}'
+
+inputs:
+  - type: prometheus/metrics
+
+    data_stream.namespace: default
+    use_output: default
+    streams:
+      - metricset: remote_write
+        data_stream.dataset: prometheus.remote_write
+        host: "0.0.0.0"
+        port: "9201"
