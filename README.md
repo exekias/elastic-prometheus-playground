@@ -4,7 +4,6 @@ This repository contains a simple scenario to ease the task of testing and devel
 
 It will launch:
 
-- [cadvisor](https://github.com/google/cadvisor)
 - [node_exporter](https://github.com/prometheus/node_exporter)
 - [Prometheus server](https://github.com/prometheus/prometheus), consuming from both cadvisor and node_exporter, sending a copy of them to Elastic through the `remote_write` endpoint in the Agent.
 - [Elasticsearch](https://www.elastic.co/products/elasticsearch)
@@ -15,7 +14,7 @@ It will launch:
 # Requirements
 
  - Install [docker-compose](https://docs.docker.com/compose/install/)
- 
+
 # Launch the scenario
 
 ```bash
