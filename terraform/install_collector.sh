@@ -1,23 +1,6 @@
   #! /bin/bash
 sudo curl -sSL https://get.docker.com/ | sh
 
-# Prometheus
-cat << EOF > prometheus.yml
-scrape_configs:
-- job_name: node_exporter
-  scrape_interval: 10s
-  gce_sd_configs:
-  - project: elastic-observability
-    zone: europe-west1-b
-    port: 9100
-    filter: (labels.prometheus_scrape = true)
-
-remote_write:
-  - url: "http://localhost:9201/write"
-EOF
-
-sudo docker run -d --net=host -p 80:9090 -v $(pwd)/prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus
-
 # Agent
 cat << EOF > elastic-agent.yml
 outputs:
@@ -40,4 +23,24 @@ inputs:
         use_types: true
 EOF
 
-sudo docker run -d --net=host -v $(pwd)/elastic-agent.yml:/usr/share/elastic-agent/elastic-agent.yml docker.elastic.co/beats/elastic-agent:7.x-SNAPSHOT
+sudo docker run -d --net=host -v $(pwd)/elastic-agent.yml:/usr/share/elastic-agent/elastic-agent.yml docker.elastic.co/beats/elastic-agent:7.x-SNAPSHOT -e -v
+
+# Prometheus
+cat << EOF > prometheus.yml
+scrape_configs:
+- job_name: node_exporter
+  scrape_interval: 10s
+  gce_sd_configs:
+  - project: elastic-observability
+    zone: europe-west1-b
+    port: 9100
+    filter: (labels.prometheus_scrape = true)
+
+remote_write:
+  - url: "http://localhost:9201/write"
+EOF
+
+sudo docker run -d --net=host -p 80:9090 -v $(pwd)/prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus
+
+sleep ${TEST_TIME_SECONDS}
+sudo poweroff

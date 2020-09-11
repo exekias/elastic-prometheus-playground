@@ -6,14 +6,22 @@ terraform {
   }
 }
 
+# Number of data generating (worker) machines
 variable "instance_count" {
   default = "2"
 }
 
+# Stop all machines after this time
+variable "test_time_seconds" {
+  default = "300"
+}
+
+# Name prefix for all machines
 variable "vm_name_prefix" {
   default = "carlos"
 }
 
+# Elasticsearch credentials
 variable "elasticsearch" {
   type = map
 
@@ -54,7 +62,12 @@ resource "google_compute_instance" "exporters" {
     }
   }
 
-  metadata_startup_script = file("install_worker.sh")
+  metadata_startup_script = templatefile("install_worker.sh", {
+      ELASTICSEARCH_HOSTS = var.elasticsearch.hosts,
+      ELASTICSEARCH_USERNAME = var.elasticsearch.username,
+      ELASTICSEARCH_PASSWORD = var.elasticsearch.password,
+      TEST_TIME_SECONDS = var.test_time_seconds,
+  })
 }
 
 resource "google_compute_instance" "prometheus" {
@@ -84,5 +97,6 @@ resource "google_compute_instance" "prometheus" {
       ELASTICSEARCH_HOSTS = var.elasticsearch.hosts,
       ELASTICSEARCH_USERNAME = var.elasticsearch.username,
       ELASTICSEARCH_PASSWORD = var.elasticsearch.password,
+      TEST_TIME_SECONDS = var.test_time_seconds,
   })
 }
