@@ -46,6 +46,7 @@ resource "google_compute_instance" "exporters" {
   count         = var.instance_count
 
   name         = "${var.vm_name_prefix}-prometheus-node-exporter-${count.index + 1}"
+  hostname     = "${var.vm_name_prefix}-prometheus-node-exporter-${count.index + 1}.test.lan"
   machine_type = "e2-micro"
   labels       = {"prometheus_scrape": "true"}
 
