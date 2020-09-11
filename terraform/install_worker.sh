@@ -2,7 +2,13 @@
 sudo curl -sSL https://get.docker.com/ | sh
 
 # node_exporter
-sudo docker run -d --net=host --pid=host -v '/:/host:ro,rslave' quay.io/prometheus/node-exporter --path.rootfs=/host
+sudo docker run \
+  -d \
+  --net=host \
+  --pid=host \
+  -v '/:/host:ro,rslave' \
+  quay.io/prometheus/node-exporter \
+  --path.rootfs=/host
 
 # Elastic agent system package
 cat << EOF > elastic-agent.yml
@@ -96,7 +102,13 @@ inputs:
         period: 10s
 EOF
 
-sudo docker run --name elastic-agent -d --network host -v $(pwd)/elastic-agent.yml:/usr/share/elastic-agent/elastic-agent.yml docker.elastic.co/beats/elastic-agent:7.x-SNAPSHOT -e -v
+sudo docker run \
+  --name elastic-agent \
+  -d \
+  --network host \
+  -v $(pwd)/elastic-agent.yml:/usr/share/elastic-agent/elastic-agent.yml \
+  docker.elastic.co/beats/elastic-agent:7.x-SNAPSHOT \
+  -e -v
 
 sleep ${TEST_TIME_SECONDS}
 sudo poweroff

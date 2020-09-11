@@ -26,7 +26,13 @@ inputs:
         use_types: true
 EOF
 
-sudo docker run --name elastic-agent -d --network collector -v $(pwd)/elastic-agent.yml:/usr/share/elastic-agent/elastic-agent.yml docker.elastic.co/beats/elastic-agent:7.x-SNAPSHOT -e -v
+sudo docker run \
+  --name elastic-agent \
+  -d \
+  --network collector \
+  -v $(pwd)/elastic-agent.yml:/usr/share/elastic-agent/elastic-agent.yml \
+  docker.elastic.co/beats/elastic-agent:7.x-SNAPSHOT \
+  -e -v
 
 # Prometheus
 cat << EOF > prometheus.yml
@@ -43,7 +49,17 @@ remote_write:
   - url: "http://elastic-agent:9201/write"
 EOF
 
-sudo docker run --name prometheus -d  --network collector -p 80:9090 -v $(pwd)/prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus
+sudo mkdir /prometheus_data
+sudo chown -R 65534:65534 /prometheus_data
+
+sudo docker run \
+  --name prometheus \
+  -d  \
+  --network collector \
+  -p 80:9090 \
+  -v $(pwd)/prometheus.yml:/etc/prometheus/prometheus.yml \
+  -v /prometheus_data:/prometheus \
+  prom/prometheus
 
 sleep ${TEST_TIME_SECONDS}
 sudo docker stop prometheus
