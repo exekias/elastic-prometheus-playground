@@ -13,6 +13,12 @@ outputs:
     username: '${ELASTICSEARCH_USERNAME}'
     password: '${ELASTICSEARCH_PASSWORD}'
 
+agent.monitoring:
+  enabled: false
+  logs: false
+  metrics: false
+agent.logging.level: info
+
 inputs:
   - type: prometheus/metrics
 
